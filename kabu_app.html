@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="株ガイド">
+<meta name="theme-color" content="#0a0e1a">
+<title>株式投資ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2338;--border:#1e2d45;
+  --text:#e6edf5;--muted:#6b7fa0;--muted2:#4a5a78;
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);--red-border:rgba(239,68,68,0.25);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,0.1);
+  --gold:#f59e0b;--gold-bg:rgba(245,158,11,0.1);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,0.1);--cyan-border:rgba(6,182,212,0.25);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.1);
+  --tab-h:60px;--header-h:52px;--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65}
+/* Layout */
+#app{display:flex;flex-direction:column;height:100%;height:-webkit-fill-available}
+#header{flex-shrink:0;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;position:relative;z-index:10}
+#header-icon{width:28px;height:28px;background:var(--cyan);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#header-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+#header-title{font-family:'Shippori Mincho',serif;font-size:16px;font-weight:600;color:var(--text)}
+#header-sub{font-size:10px;color:var(--muted);margin-top:1px}
+#header-badge{margin-left:auto;font-size:10px;background:var(--cyan-bg);border:1px solid var(--cyan-border);color:var(--cyan);padding:2px 8px;border-radius:10px;flex-shrink:0}
+#content{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px calc(var(--tab-h) + var(--safe-bottom) + 16px);display:none}
+.page.active{display:block}
+#tabbar{flex-shrink:0;height:calc(var(--tab-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:stretch;position:relative;z-index:10}
+.tab{flex:1;min-height:var(--tab-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:color .15s;color:var(--muted2);border:none;background:none;-webkit-appearance:none;padding:8px 0 0}
+.tab.active{color:var(--cyan)}
+.tab-icon{font-size:20px;line-height:1}
+.tab-label{font-size:9px;font-weight:500;letter-spacing:.02em}
+/* Cards & common */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 15px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.section-label{font-size:10px;letter-spacing:.12em;color:var(--muted);font-weight:500;margin:16px 0 8px;text-transform:uppercase}
+.alert{border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:12px;line-height:1.6}
+.alert h4{font-weight:700;margin-bottom:4px;font-size:12px}
+.a-blue{background:var(--blue-bg);border:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue)}
+.a-green{background:var(--green-bg);border:1px solid var(--green-border);border-left:3px solid var(--green)}
+.a-red{background:var(--red-bg);border:1px solid var(--red-border);border-left:3px solid var(--red)}
+.a-gold{background:var(--gold-bg);border:1px solid rgba(245,158,11,.2);border-left:3px solid var(--gold)}
+.a-cyan{background:var(--cyan-bg);border:1px solid var(--cyan-border);border-left:3px solid var(--cyan)}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600}
+.b-g{background:var(--green-bg);color:var(--green)}
+.b-r{background:var(--red-bg);color:var(--red)}
+.b-b{background:var(--blue-bg);color:var(--blue)}
+.b-y{background:var(--gold-bg);color:var(--gold)}
+.b-c{background:var(--cyan-bg);color:var(--cyan)}
+.b-p{background:var(--purple-bg);color:var(--purple)}
+.b-gray{background:rgba(107,127,160,.12);color:var(--muted)}
+/* Page headers */
+.page-header{margin-bottom:16px}
+.page-header h2{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:600;line-height:1.25;margin-bottom:3px}
+.page-header p{font-size:11px;color:var(--muted);line-height:1.5}
+/* Signal grid */
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.sig{border-radius:10px;padding:12px 13px;border:1px solid}
+.sig.buy{background:var(--green-bg);border-color:var(--green-border)}
+.sig.sell{background:var(--red-bg);border-color:var(--red-border)}
+.sig.caution{background:var(--gold-bg);border-color:rgba(245,158,11,.25)}
+.sig.info{background:var(--cyan-bg);border-color:var(--cyan-border)}
+.sig-label{font-size:12px;font-weight:900;margin-bottom:6px}
+.sig-label.buy{color:var(--green)}
+.sig-label.sell{color:var(--red)}
+.sig-label.caution{color:var(--gold)}
+.sig-label.info{color:var(--cyan)}
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:var(--surface2);color:var(--cyan);font-weight:600;padding:7px 10px;text-align:left;font-size:10px;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+.tbl td{padding:8px 10px;border-bottom:1px solid rgba(30,45,69,.5);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+/* Metric cards */
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.metric{background:var(--surface2);border-radius:10px;padding:12px 10px;text-align:center}
+.metric-name{font-size:16px;font-weight:900;color:var(--cyan);margin-bottom:2px}
+.metric-desc{font-size:9px;color:var(--muted);line-height:1.4;margin-bottom:8px}
+.metric-val{font-size:15px;font-weight:700;color:var(--gold)}
+.metric-note{font-size:9px;color:var(--muted)}
+/* Checklist */
+.checklist{list-style:none}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(30,45,69,.5);cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;min-width:20px;border-radius:5px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green)}
+.check-icon{display:none;width:12px;height:12px}
+.check-item.checked .check-icon{display:block;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.check-text{flex:1;font-size:12px;line-height:1.55}
+.check-item.checked .check-text{color:var(--muted);text-decoration:line-through}
+.check-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.check-reset{font-size:11px;color:var(--muted);text-align:right;padding:6px 0 0;cursor:pointer}
+/* Pattern tags */
+.ptags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.ptag{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500}
+.ptag-bomb{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.ptag-mid{background:rgba(251,146,60,.12);color:#fdba74;border:1px solid rgba(251,146,60,.2)}
+.ptag-mild{background:rgba(107,127,160,.1);color:var(--muted);border:1px solid var(--border)}
+/* Flow steps */
+.flow{display:flex;flex-direction:column}
+.fstep{display:flex;gap:12px;position:relative}
+.fstep:not(:last-child)::after{content:'';position:absolute;left:14px;top:32px;bottom:-8px;width:1.5px;background:linear-gradient(to bottom,var(--cyan),transparent)}
+.fdot{width:30px;height:30px;min-width:30px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--cyan);margin-top:2px}
+.fcontent{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;flex:1;margin-bottom:8px}
+.fcontent h4{font-size:12px;font-weight:700;margin-bottom:4px}
+.fcontent p{font-size:11px;color:var(--muted);line-height:1.6}
+.fcontent p strong{color:var(--text)}
+/* Home page specific */
+.home-hero{background:linear-gradient(135deg,var(--surface2) 0%,rgba(6,182,212,.08) 100%);border:1px solid var(--cyan-border);border-radius:14px;padding:16px;margin-bottom:12px}
+.home-hero h3{font-family:'Shippori Mincho',serif;font-size:17px;font-weight:600;margin-bottom:6px;line-height:1.3}
+.home-hero p{font-size:11px;color:var(--muted);line-height:1.6}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.nav-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;cursor:pointer;transition:border-color .15s}
+.nav-card:active{border-color:var(--cyan)}
+.nav-card-icon{font-size:22px;margin-bottom:6px}
+.nav-card-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.nav-card-desc{font-size:10px;color:var(--muted);line-height:1.4}
+/* Tab indicator */
+.tab-dot{width:4px;height:4px;border-radius:50%;background:var(--cyan);margin:0 auto;opacity:0;transition:opacity .15s}
+.tab.active .tab-dot{opacity:1}
+/* Template box */
+.template-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:8px;font-family:monospace}
+.template-box strong{color:var(--cyan);font-family:'Noto Sans JP',sans-serif;font-size:10px;font-weight:700;display:block;margin-bottom:4px}
+/* Risk meter */
+.risk-bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;margin:6px 0}
+.risk-fill{height:100%;border-radius:4px;transition:width .3s}
+/* Accordion */
+.accord-item{border-bottom:1px solid var(--border)}
+.accord-head{display:flex;align-items:center;justify-content:space-between;padding:11px 0;cursor:pointer;font-size:12px;font-weight:500;gap:8px}
+.accord-arrow{font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.accord-item.open .accord-arrow{transform:rotate(180deg)}
+.accord-body{display:none;padding:0 0 12px;font-size:11px;color:var(--muted);line-height:1.65}
+.accord-item.open .accord-body{display:block}
+/* Scroll to top */
+.scroll-top{position:fixed;bottom:calc(var(--tab-h) + var(--safe-bottom) + 12px);right:14px;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:none;align-items:center;justify-content:center;font-size:14px;cursor:pointer;z-index:20;color:var(--muted)}
+.scroll-top.show{display:flex}
+
+#routine-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;align-items:flex-end;justify-content:center}
+#routine-overlay.show{display:flex}
+#routine-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px)}
+.routine-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 4px}
+.routine-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;border-bottom:1px solid var(--border)}
+.routine-header h3{font-family:'Shippori Mincho',serif;font-size:17px;font-weight:600}
+.routine-close{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:none;color:var(--muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.routine-body{padding:14px 16px}
+.rphase{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--cyan);margin:14px 0 8px;display:flex;align-items:center;gap:8px;text-transform:uppercase}
+.rphase span{height:1px;flex:1;background:var(--border)}
+.ritem{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(30,45,69,.4);cursor:pointer}
+.ritem:last-child{border-bottom:none}
+.rbox{width:22px;height:22px;min-width:22px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
+.ritem.on .rbox{background:var(--green);border-color:var(--green)}
+.ricon{display:none;width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ritem.on .ricon{display:block}
+.ritem.on .rtext{color:var(--muted);text-decoration:line-through}
+.rtext{font-size:12px;line-height:1.5;flex:1}
+.rsub{font-size:10px;color:var(--muted);margin-top:2px}
+.rprog{background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.rprog-bar{flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+.rprog-fill{height:100%;border-radius:3px;background:var(--green);transition:width .3s}
+.rprog-lbl{font-size:11px;color:var(--muted);min-width:40px;text-align:right}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Header -->
+<div id="header">
+  <div id="header-icon" onclick="goTab('home')" style="cursor:pointer">
+    <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+  </div>
+  <div>
+    <div id="header-title" onclick="goTab('home')" style="cursor:pointer">株式投資ガイド</div>
+    <div id="header-sub">完全リファレンス</div>
+  </div>
+  <div id="header-badge">ver 3.0</div>
+</div>
+
+<!-- Content -->
+<div id="content">
+
+<!-- ===== PAGE: HOME ===== -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <h3>今日の相談、<br>何から始める？</h3>
+    <p>各タブから直接アクセス。チェックリストで確認してからClaudeに送ろう。</p>
+  </div>
+
+  <div class="section-label">クイックアクセス</div>
+
+  <div class="nav-card" style="margin-bottom:8px;display:flex;align-items:center;gap:14px;padding:14px 16px" onclick="openRoutine()">
+    <div style="font-size:28px;flex-shrink:0">📅</div>
+    <div style="flex:1">
+      <div class="nav-card-title" style="font-size:13px;margin-bottom:3px">日々のルーティン</div>
+      <div class="nav-card-desc">朝・夜の確認フロー。毎日ここから始める。</div>
+    </div>
+    <div style="color:var(--cyan);font-size:18px;flex-shrink:0">›</div>
+  </div>
+
+  <div class="nav-grid">
+    <div class="nav-card" onclick="goTab('check')">
+      <div class="nav-card-icon">✅</div>
+      <div class="nav-card-title">買い前チェック</div>
+      <div class="nav-card-desc">相談前に自分で確認するリスト</div>
+    </div>
+    <div class="nav-card" onclick="goTab('basic')">
+      <div class="nav-card-icon">📊</div>
+      <div class="nav-card-title">分析手法</div>
+      <div class="nav-card-desc">MA・水平線・ダウ理論</div>
+    </div>
+    <div class="nav-card" onclick="goTab('pattern')">
+      <div class="nav-card-icon">🕯</div>
+      <div class="nav-card-title">ローソク足</div>
+      <div class="nav-card-desc">買い・売りパターン一覧</div>
+    </div>
+    <div class="nav-card" onclick="goTab('ops')">
+      <div class="nav-card-icon">🤖</div>
+      <div class="nav-card-title">Claude運用</div>
+      <div class="nav-card-desc">送り方・テンプレート</div>
+    </div>
+  </div>
+
+  <div class="section-label">相場の3原則</div>
+  <div class="card">
+    <ul class="checklist" id="principles">
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">生活費・緊急予備費（3ヶ月分）は絶対に投資しない<div class="check-sub">余剰資金だけで運用する</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">損しても生活に影響しない金額だけ使う<div class="check-sub">精神的余裕が正確な判断を生む</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">1銘柄に集中投資しない（最初は2〜3銘柄）<div class="check-sub">分散でリスクを下げる</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section-label">よくある失敗パターン</div>
+  <div class="card">
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ SNSの「爆上がり確定」に飛びつく<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">99%が誇張か詐欺。情報源を必ず確認。推奨者が先に買って後から宣伝する「パンプアンドダンプ」が横行している。ファンダメンタルと自分の分析だけを信じる。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ 損切りせず「いつか戻る」と持ち続ける<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">含み損が膨らむ最大の原因。買う前に必ず「-7%で売る」などのルールを決め、機械的に実行する。感情で動かないことが最重要。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ 信用取引（借金で株を買う）を早期に使う<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">損失が投資額を超えることがある。現物取引だけで最低1年以上の経験を積んでから検討する。初心者が信用取引で退場するケースは非常に多い。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ 1つの根拠だけで売買を決める<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">ローソク足パターン単体では精度50〜60%。水平線・ダウ理論・MAの3つ以上が重なって初めて信頼性が上がる。根拠の数が精度に直結する。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ 事業内容を理解せずに買う<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">「この会社が何をしているか他人に説明できない」銘柄は買わない（バフェットの鉄則）。何かあった時に状況を正しく判断できなくなる。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">❌ 相場環境を無視して個別株だけ見る<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">日経平均が大暴落している時に個別株を強気で買うのは危険。相場全体の流れ（日経・為替・金利）を把握してから個別判断をする。</div>
+    </div>
+  </div>
+
+  <div class="section-label">NISA・税金の基礎</div>
+  <div class="card">
+    <div class="card-title">💴 利益が出た時のお金の話</div>
+    <table class="tbl">
+      <tr><th>区分</th><th>税率</th><th>ポイント</th></tr>
+      <tr><td><span class="badge b-g">NISA（成長投資枠）</span></td><td style="color:var(--green);font-weight:700">0%</td><td style="font-size:10px">年240万円まで非課税。まずここを最大活用</td></tr>
+      <tr><td><span class="badge b-r">特定口座（源泉徴収あり）</span></td><td style="color:var(--red);font-weight:700">約20%</td><td style="font-size:10px">利益×20.315%が自動で引かれる。確定申告不要</td></tr>
+      <tr><td><span class="badge b-b">損益通算</span></td><td style="color:var(--blue)">節税</td><td style="font-size:10px">損した銘柄と利益を相殺できる。年末に活用</td></tr>
+    </table>
+    <div class="alert a-cyan" style="margin-top:10px;margin-bottom:0">
+      <h4>NISAの鉄則</h4>
+      まず年間240万円の成長投資枠をフル活用。NISA枠が埋まってから特定口座を使う順番が節税的に最適。
+    </div>
+  </div>
+
+  <div class="section-label">相場環境の読み方</div>
+  <div class="card">
+    <div class="card-title">🌏 マクロ環境が個別株に与える影響</div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">📈 日経平均・TOPIXの方向性<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">相場全体が下落トレンドの時は個別株も引きずられやすい。「ダウ理論」を日経平均に当てはめてトレンドを確認してから個別株を見る習慣をつける。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">💱 円安・円高と株価の関係<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">円安→輸出企業（トヨタ等）の業績が上がりやすい。円高→輸入企業・内需株に有利。保有銘柄が輸出型か内需型かを把握しておく。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">🏦 金利の変化と株価<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">金利上昇→成長株（グロース株）のPERが下がりやすい。金利低下→株全体に追い風。日銀の政策金利発表は必ずチェック。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">🇺🇸 米国市場の影響<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">NY株式市場（S&P500・ナスダック）が大きく動くと翌日の日本株に影響する。米国の経済指標（CPI・雇用統計）の発表日は相場が荒れやすい。</div>
+    </div>
+  </div>
+  <div class="section-label">あなたの推奨運用フロー</div>
+  <div class="card" style="border-color:var(--cyan-border)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div style="background:var(--cyan-bg);border:1px solid var(--cyan-border);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--cyan);font-weight:700">楽天証券ユーザー向け</div>
+      <div style="font-size:10px;color:var(--muted)">積立NISA継続 ＋ 個別株</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0">
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--green),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--green-bg);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);margin-top:2px;flex-shrink:0">1</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;color:var(--green)">積立NISA（月4万）— そのまま継続 ✅</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">楽天証券の積立NISAはそのまま続ける。オルカン or S&P500インデックスへの積立は「ほったらかし」が正解。毎月自動で入金されるのでここは一切触らなくていい。<br><strong style="color:var(--text)">→ 年間48万円が非課税で積み上がっていく基盤</strong></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--cyan),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--cyan-bg);border:1.5px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--cyan);margin-top:2px;flex-shrink:0">2</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;color:var(--cyan)">成長投資枠（NISA）で個別株 — 年240万まで非課税</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">楽天証券のNISA口座には「成長投資枠（年240万円）」が別枠であるので、個別株の買いはまずここを使う。利益が出ても税金0円。<br><strong style="color:var(--text)">余裕ある月に1〜2万プール → 3〜5ヶ月で3〜5万円貯まったら1銘柄購入 → 成長投資枠（年240万）の範囲内に完全に収まる</strong></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--gold),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--gold-bg);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gold);margin-top:2px;flex-shrink:0">3</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;color:var(--gold)">個別株の始め方（最初の3ヶ月）</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--text)">1ヶ月目：</strong>買わずにチャートを毎日見る練習<br>
+            <strong style="color:var(--text)">2ヶ月目：</strong>IR BANKで銘柄を10社絞り込む<br>
+            <strong style="color:var(--text)">3ヶ月目：</strong>条件が揃った1銘柄だけ5〜10万円で買う<br>
+            <strong style="color:var(--text)">→ 損切り（-7%）は機械的に実行</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--purple-bg);border:1.5px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--purple);margin-top:2px;flex-shrink:0">4</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;color:var(--purple)">慣れてきたら（半年後〜）</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">慣れたら1銘柄5万円に増額→2銘柄へ分散。余裕資金が増えてから。NISA成長投資枠（年240万）が埋まった分から特定口座へ。<br><strong style="color:var(--text)">積立NISA ＋ 個別株NISAの2本柱で資産形成</strong></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert a-gold" style="margin-top:4px;margin-bottom:8px">
+      <h4>⚠️ 注意点</h4>
+      積立NISAの月4万は「長期・分散・ほったらかし」の資産。個別株とは完全に切り離して考える。個別株で損しても積立NISAには手をつけない。
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:0">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--cyan)">💳 個別株の資金はどこから入金する？</div>
+      <table class="tbl" style="margin-bottom:10px">
+        <tr><th>用途</th><th>引き落とし元</th><th>操作</th></tr>
+        <tr>
+          <td><span class="badge b-g">積立NISA 月4万</span></td>
+          <td style="font-size:11px">奥さんの口座<br><span style="color:var(--muted);font-size:10px">現状のまま自動</span></td>
+          <td style="font-size:11px;color:var(--muted)">触らなくてOK</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-b">個別株 月3万（1銘柄）</span></td>
+          <td style="font-size:11px">自分名義の口座<br><span style="color:var(--muted);font-size:10px">給与口座など</span></td>
+          <td style="font-size:11px;color:var(--cyan)">手動で入金</td>
+        </tr>
+      </table>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">楽天証券への入金方法は2つ：</strong><br>
+        ① <strong style="color:var(--text)">楽天銀行から即時入金</strong> — 楽天証券アプリ内から数秒で完了。楽天銀行口座があれば最もスムーズ。<br>
+        ② <strong style="color:var(--text)">他銀行から振込</strong> — 自分名義のどの銀行でも振込可能。<br><br>
+        <strong style="color:var(--gold)">ポイント：毎月自動引き落としにする必要はない。</strong>余裕ある月だけ1〜2万円をプールしておき、3〜5万円貯まったタイミングで1銘柄買う。積立NISAと操作が完全に分離されるので奥さんの口座と干渉しない。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== PAGE: BASIC (分析手法) ===== -->
+<div class="page" id="page-basic">
+  <div class="page-header">
+    <h2>分析手法</h2>
+    <p>移動平均線・水平線・ダウ理論・チャートパターン</p>
+  </div>
+
+  <div class="section-label">01 移動平均線（MA）</div>
+  <div class="card">
+    <div class="card-title">📊 ゴールデン / デッドクロス</div>
+    <div class="sig-grid">
+      <div class="sig buy"><div class="sig-label buy">🟢 買え！</div><div style="font-size:11px">短期線が長期線を<strong>下から上へ</strong>突き抜ける＝ゴールデンクロス</div></div>
+      <div class="sig sell"><div class="sig-label sell">🔴 売れ！</div><div style="font-size:11px">短期線が長期線を<strong>上から下へ</strong>突き抜ける＝デッドクロス</div></div>
+      <div class="sig caution"><div class="sig-label caution">🟠 買うな</div><div style="font-size:11px">長期線が<strong>下向き</strong>の時のクロスは信頼性低い</div></div>
+      <div class="sig info"><div class="sig-label info">🟣 売るな</div><div style="font-size:11px">長期線が<strong>上向き</strong>の時は押し目買いが正解</div></div>
+    </div>
+    <table class="tbl">
+      <tr><th>タイプ</th><th>短期線</th><th>長期線</th></tr>
+      <tr><td><span class="badge b-b">短期</span></td><td>5日</td><td>50日</td></tr>
+      <tr><td><span class="badge b-y">中期</span></td><td>10日</td><td>100日</td></tr>
+      <tr><td><span class="badge b-gray">長期</span></td><td>20日</td><td>200日</td></tr>
+    </table>
+    <div class="alert a-gold" style="margin-top:10px;margin-bottom:0"><h4>⚠️ 注意</h4>後追いサインなので単体では騙しが多い。水平線・ダウ理論と必ず組み合わせる。</div>
+  </div>
+
+  <div class="section-label">02 水平線（サポート / レジスタンス）</div>
+  <div class="card">
+    <div class="card-title">📏 基本ルール</div>
+    <div class="alert a-blue" style="margin-bottom:8px"><h4>引き方のコツ</h4>「2回以上反発した価格帯」に線を引く。1回だけでは偶然の可能性が高い。長期足（週足）の線ほど強力。</div>
+    <div class="sig-grid">
+      <div class="sig buy"><div class="sig-label buy">サポート（支持線）</div><div style="font-size:11px">下から押し上げる壁。ここで買うと損失を限定できる</div></div>
+      <div class="sig sell"><div class="sig-label sell">レジスタンス（抵抗線）</div><div style="font-size:11px">上から押し下げる天井。ここで売ると利益確定しやすい</div></div>
+    </div>
+    <div class="alert a-cyan" style="margin-bottom:0"><h4>🔄 レジサポ転換（最重要）</h4>抵抗線を上に突き破ると→その線が今度は支持線に変わる。この転換点は精度が高い買いシグナル。</div>
+  </div>
+
+  <div class="section-label">03 ダウ理論</div>
+  <div class="card">
+    <div class="card-title">📈 トレンドの定義</div>
+    <div class="sig-grid">
+      <div class="sig buy">
+        <div class="sig-label buy">上昇トレンド</div>
+        <div style="font-size:11px">高値を更新し続ける<br>＋安値を切り上げる<br><strong style="color:var(--green)">→ 買い継続</strong></div>
+      </div>
+      <div class="sig sell">
+        <div class="sig-label sell">下降トレンド</div>
+        <div style="font-size:11px">安値を更新し続ける<br>＋高値を切り下げる<br><strong style="color:var(--red)">→ 売り・様子見</strong></div>
+      </div>
+    </div>
+    <div class="card-title" style="margin-top:4px">🔄 転換サイン</div>
+    <table class="tbl">
+      <tr><th>転換方向</th><th>サイン</th></tr>
+      <tr><td><span class="badge b-r">上昇→下降</span></td><td style="font-size:11px">直近の安値を下回った時点で売りを検討</td></tr>
+      <tr><td><span class="badge b-g">下降→上昇</span></td><td style="font-size:11px">直近の高値を上回った時点で買いを検討</td></tr>
+    </table>
+    <div class="alert a-green" style="margin-top:10px;margin-bottom:0"><h4>✅ 信頼性：非常に高い</h4>100年以上使われている理論。初心者が最初に徹底すべき分析ナンバー1。</div>
+  </div>
+
+  <div class="section-label">04 チャートパターン</div>
+  <div class="card">
+    <div class="card-title">🟢 買うべしパターン</div>
+    <table class="tbl" style="margin-bottom:12px">
+      <tr><th>パターン</th><th>形</th><th>意味</th></tr>
+      <tr><td><strong>ダブルボトム</strong></td><td>W字</td><td style="font-size:10px">2回底打ちして上昇</td></tr>
+      <tr><td><strong>逆三尊</strong></td><td>3谷</td><td style="font-size:10px">真ん中が最も深い</td></tr>
+      <tr><td><strong>上昇フラッグ</strong></td><td>旗型</td><td style="font-size:10px">一時停滞→再上昇</td></tr>
+      <tr><td><strong>上昇トライアングル</strong></td><td>三角</td><td style="font-size:10px">天井水平・底が切り上がり</td></tr>
+      <tr><td><strong>レジサポ転換（買い）</strong></td><td>転換</td><td style="font-size:10px">以前の抵抗線が支持線に</td></tr>
+    </table>
+    <div class="card-title">🔴 売るべしパターン</div>
+    <table class="tbl">
+      <tr><th>パターン</th><th>形</th><th>意味</th></tr>
+      <tr><td><strong>ダブルトップ</strong></td><td>M字</td><td style="font-size:10px">2回天井打って下落</td></tr>
+      <tr><td><strong>三尊（H&S）</strong></td><td>3山</td><td style="font-size:10px">真ん中が最も高い</td></tr>
+      <tr><td><strong>下降フラッグ</strong></td><td>旗型</td><td style="font-size:10px">一時反発→継続下落</td></tr>
+      <tr><td><strong>下降トライアングル</strong></td><td>三角</td><td style="font-size:10px">底水平・天井が切り下がり</td></tr>
+      <tr><td><strong>サポレジ転換（売り）</strong></td><td>転換</td><td style="font-size:10px">以前の支持線が抵抗線に</td></tr>
+    </table>
+  </div>
+
+  <div class="section-label">05 重要指標 PER・PBR・ROE</div>
+  <div class="metric-row">
+    <div class="metric"><div class="metric-name">PER</div><div class="metric-desc">株価収益率<br>お得度</div><div class="metric-val">15倍</div><div class="metric-note">以下が割安</div></div>
+    <div class="metric"><div class="metric-name">PBR</div><div class="metric-desc">株価純資産倍率<br>安心度</div><div class="metric-val">1倍</div><div class="metric-note">以下が割安</div></div>
+    <div class="metric"><div class="metric-name">ROE</div><div class="metric-desc">自己資本利益率<br>経営の上手さ</div><div class="metric-val">8〜10%</div><div class="metric-note">以上が優良</div></div>
+  </div>
+  <div class="alert a-gold"><h4>⚠️ 業種で適正値が違う</h4>グロース株はPER50倍でも割安なことがある。同業他社との比較が必須。金融業は自己資本比率が低く見えるのが正常。</div>
+
+  <div class="section-label">06 決算の読み方</div>
+  <div class="card">
+    <div class="card-title">📋 IR BANKで何を見るか</div>
+    <table class="tbl">
+      <tr><th>確認項目</th><th>目安</th><th>見る理由</th></tr>
+      <tr><td>売上高の推移</td><td><span class="badge b-g">3期↑</span></td><td style="font-size:10px">ビジネスが成長しているか</td></tr>
+      <tr><td>営業利益率</td><td><span class="badge b-g">高いほど◎</span></td><td style="font-size:10px">本業の稼ぐ力</td></tr>
+      <tr><td>自己資本比率</td><td><span class="badge b-g">40%以上</span></td><td style="font-size:10px">財務の安全性</td></tr>
+      <tr><td>配当性向</td><td><span class="badge b-y">50%以下</span></td><td style="font-size:10px">将来の減配リスク確認</td></tr>
+      <tr><td>連続増配年数</td><td><span class="badge b-g">長いほど◎</span></td><td style="font-size:10px">株主還元の安定性</td></tr>
+      <tr><td>EPS（1株利益）推移</td><td><span class="badge b-g">増加傾向</span></td><td style="font-size:10px">株主への利益の伸び</td></tr>
+    </table>
+    <div class="alert a-red" style="margin-top:10px;margin-bottom:0"><h4>🚨 即売り検討の売りシグナル</h4>
+    ①3期以上連続で売上減少<br>
+    ②配当性向80%以上（減配リスク大）<br>
+    ③PERが20倍以上（割高）<br>
+    ④経営陣が突然交代・不祥事</div>
+  </div>
+
+  <div class="section-label">07 複数根拠の重ね方</div>
+  <div class="card">
+    <div class="card-title">🎯 根拠の数と精度の関係</div>
+    <table class="tbl" style="margin-bottom:10px">
+      <tr><th>重なる根拠の数</th><th>目安精度</th><th>判断</th></tr>
+      <tr><td>1つ（例：ローソク足だけ）</td><td style="color:var(--red)">50〜60%</td><td><span class="badge b-r">見送り</span></td></tr>
+      <tr><td>2つ（例：MA＋水平線）</td><td style="color:var(--gold)">65〜70%</td><td><span class="badge b-y">要慎重</span></td></tr>
+      <tr><td>3つ以上が重なる</td><td style="color:var(--green)">75〜80%+</td><td><span class="badge b-g">買い検討</span></td></tr>
+    </table>
+    <div class="card-title">最強の組み合わせ例</div>
+    <div class="alert a-green" style="margin-bottom:8px">
+      ①ダウ理論：上昇トレンド中<br>
+      ②水平線：サポートで反発の形<br>
+      ③MA：長期線が上向き・GCが近い<br>
+      ④ローソク足：逆三尊 or 赤三兵<br>
+      ⑤ファンダ：PER15倍以下・増収3期以上<br>
+      <strong style="color:var(--green)">→ 今のあなたのルール：この5つ＋ファンダ6項目、全部揃った時だけ買う</strong>
+    </div>
+    <div class="alert a-cyan" style="margin-bottom:0"><h4>💡 Claudeへの渡し方との接続</h4>「チャート画像＋財務数値＋ニュース」を一緒に送ることで、この複数根拠を一気に照合できる。自分で全部分析する必要はない。</div>
+  </div>
+</div>
+
+<!-- ===== PAGE: PATTERN (ローソク足) ===== -->
+<div class="page" id="page-pattern">
+  <div class="page-header">
+    <h2>ローソク足</h2>
+    <p>買い・売りパターン一覧と爆益度マップ</p>
+  </div>
+
+  <div class="alert a-blue"><h4>💡 基本構造</h4>白/緑＝陽線（上昇）、黒/赤＝陰線（下降）。ヒゲ＝高値・安値。実体＝始値〜終値。パターン単体の精度は50〜60%。必ず他の根拠と組み合わせる。</div>
+
+  <div class="section-label">買い×爆益（最優先）</div>
+  <div class="card">
+    <div class="ptags">
+      <span class="ptag ptag-bomb">逆三尊</span>
+      <span class="ptag ptag-bomb">赤三兵</span>
+      <span class="ptag ptag-bomb">上げ三法</span>
+      <span class="ptag ptag-bomb">陰線連続後の大陽線</span>
+      <span class="ptag ptag-bomb">かぶせの上抜き</span>
+      <span class="ptag ptag-bomb">赤三兵思案星</span>
+      <span class="ptag ptag-bomb">陰の両つつみ</span>
+      <span class="ptag ptag-bomb">三空叩き込み</span>
+      <span class="ptag ptag-bomb">つばめ返し</span>
+      <span class="ptag ptag-bomb">抱きの一本立ち</span>
+    </div>
+    <div class="alert a-green" style="margin-bottom:0">初心者はまず<strong>「逆三尊」「赤三兵」「陰線連続後の大陽線」</strong>の3つだけ覚えれば十分。</div>
+  </div>
+
+  <div class="section-label">買い×中程度</div>
+  <div class="card">
+    <div class="ptags">
+      <span class="ptag ptag-mid">つばめ返り</span>
+      <span class="ptag ptag-mid">抱きの一本立ち</span>
+      <span class="ptag ptag-mid">陽のたすき線</span>
+      <span class="ptag ptag-mid">三空踏み上げ</span>
+      <span class="ptag ptag-mid">陰の両つつみ</span>
+      <span class="ptag ptag-mid">二本たくり線</span>
+      <span class="ptag ptag-mid">陽の二つ星</span>
+    </div>
+  </div>
+
+  <div class="section-label">買い×微益（補助的）</div>
+  <div class="card">
+    <div class="ptags">
+      <span class="ptag ptag-mild">明けの明星</span>
+      <span class="ptag ptag-mild">切り込み線</span>
+      <span class="ptag ptag-mild">はらみ線</span>
+      <span class="ptag ptag-mild">上昇窓</span>
+      <span class="ptag ptag-mild">ピンバー（買い）</span>
+      <span class="ptag ptag-mild">スパイクロー</span>
+      <span class="ptag ptag-mild">上ピンバー</span>
+      <span class="ptag ptag-mild">スラストアップ</span>
+      <span class="ptag ptag-mild">陽の二ッ星</span>
+      <span class="ptag ptag-mild">赤三兵先詰まり</span>
+    </div>
+  </div>
+
+  <div class="section-label">売り×爆益（最優先）</div>
+  <div class="card">
+    <div class="ptags">
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">三尊（H&S）</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">黒三兵</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">下げ三法</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">たくり</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">陰のつつみ線</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">つつみ</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.2);color:#fca5a5">ダブルトップ</span>
+    </div>
+    <div class="alert a-red" style="margin-bottom:0">売りで最優先は<strong>「三尊」「黒三兵」「ダブルトップ」</strong>。これが天井圏で出たら即検討。</div>
+  </div>
+
+  <div class="section-label">売り×微益（補助的）</div>
+  <div class="card">
+    <div class="ptags">
+      <span class="ptag ptag-mild">首吊り線</span>
+      <span class="ptag ptag-mild">流れ星</span>
+      <span class="ptag ptag-mild">陽線後の大陰線</span>
+      <span class="ptag ptag-mild">ピンバー（売り）</span>
+      <span class="ptag ptag-mild">かぶせ線</span>
+      <span class="ptag ptag-mild">スパイクハイ</span>
+      <span class="ptag ptag-mild">赤三兵先詰まり</span>
+      <span class="ptag ptag-mild">星</span>
+    </div>
+  </div>
+
+  <div class="section-label">天井圏シグナル一覧</div>
+  <div class="card">
+    <div class="card-title">🔴 今すぐ売れ！</div>
+    <div class="ptags">
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">首吊り線</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">三羽烏</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">団子天井</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">捨て子線</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">陽の陽はらみ</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">最後の抱き線</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">波高い線</span>
+      <span class="ptag ptag-bomb" style="background:rgba(239,68,68,.15);color:#fca5a5">陰線五本</span>
+    </div>
+    <div class="card-title" style="margin-top:10px">🟠 待って売れ！（下降相場継続）</div>
+    <div class="ptags">
+      <span class="ptag ptag-mid">下放れ二本黒</span>
+      <span class="ptag ptag-mid">下げ三法</span>
+      <span class="ptag ptag-mid">バケ線</span>
+      <span class="ptag ptag-mid">下放れタスキ</span>
+      <span class="ptag ptag-mid">入り首</span>
+      <span class="ptag ptag-mid">二ッ星</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: CHECK (チェックリスト) ===== -->
+<div class="page" id="page-check">
+  <div class="page-header">
+    <h2>買い前チェック</h2>
+    <p>Claudeに送る前に自分で揃える材料リスト</p>
+  </div>
+
+  <div class="section-label">STEP 1 — ファンダメンタル確認（IR BANKで）</div>
+  <div class="card">
+    <ul class="checklist" id="funda-check">
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">売上高・営業利益が過去3期連続増加<div class="check-sub">IR BANK → 業績推移グラフで確認</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">自己資本比率 40% 以上<div class="check-sub">金融業は業種特性あり・同業比較で判断</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">PER 15倍以下（割安）<div class="check-sub">同業他社のPERと比較する</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">ROE 8〜10% 以上<div class="check-sub">経営の効率性の目安</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">配当性向 50% 以下<div class="check-sub">高すぎると将来の減配リスク</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">事業内容を説明できる＋今の時代の流れに合っている<div class="check-sub">①他人に事業を説明できる ②AI・DX・高齢化・インバウンド等の追い風がある ③向かい風業種（紙・印刷・衰退産業）ではない</div></div>
+      </li>
+    </ul>
+    <div class="check-reset" onclick="resetCheck('funda-check')">↺ リセット</div>
+  </div>
+
+  <div class="section-label">STEP 2 — テクニカル確認（TradingViewで）</div>
+  <div class="card">
+    <ul class="checklist" id="tech-check">
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">ダウ理論：上昇トレンド中（高値・安値が切り上がり）<div class="check-sub">下降トレンド中は原則買わない</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">水平線：サポートライン付近か確認<div class="check-sub">2回以上反発している価格帯を確認</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">移動平均線：長期線が上向きか<div class="check-sub">GC（ゴールデンクロス）が出ていればなお良し</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">ローソク足：買いシグナルが出ているか<div class="check-sub">逆三尊・赤三兵・陰線連続後の大陽線等</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">チャートパターン：買いパターンが出ているか<div class="check-sub">ダブルボトム・逆三尊・レジサポ転換等</div></div>
+      </li>
+    </ul>
+    <div class="check-reset" onclick="resetCheck('tech-check')">↺ リセット</div>
+  </div>
+
+  <div class="section-label">STEP 3 — 相場環境確認</div>
+  <div class="card">
+    <ul class="checklist" id="macro-check">
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">日経平均・TOPIXが上昇トレンド中か<div class="check-sub">大暴落中は個別株も巻き込まれやすい</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">直近に重要な経済指標発表がないか<div class="check-sub">米CPI・日銀会合前後は相場が荒れやすい</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">その銘柄に関連するニュースを確認した<div class="check-sub">決算発表・業績修正・不祥事等</div></div>
+      </li>
+    </ul>
+    <div class="check-reset" onclick="resetCheck('macro-check')">↺ リセット</div>
+  </div>
+
+  <div class="section-label">STEP 4 — リスク管理（必須）</div>
+  <div class="card">
+    <ul class="checklist" id="risk-check">
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">損切りラインを決めた（-5%厳守・例外なし。最大損失約1,500〜2,500円）<div class="check-sub">買う前に決める。後から変えない</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">利確目標を決めた（+10%で確実に利確・欲張らない）<div class="check-sub">欲張りすぎず、ルール通りに売る</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">最初は1銘柄3万円のみ。慣れるまで複数銘柄に手を出さない<div class="check-sub">集中投資はリスクが高い</div></div>
+      </li>
+      <li class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        <div class="check-text">NISA枠の残りを確認した<div class="check-sub">NISA枠がある限りNISAで買う</div></div>
+      </li>
+    </ul>
+    <div class="check-reset" onclick="resetCheck('risk-check')">↺ リセット</div>
+  </div>
+
+  <div class="section-label">リスク管理・ポジションサイジング</div>
+  <div class="card">
+    <div class="card-title">💰 何円をどの銘柄に入れるか</div>
+    <table class="tbl">
+      <tr><th>総資産規模</th><th>1銘柄上限</th><th>銘柄数目安</th></tr>
+      <tr><td>〜50万円</td><td style="color:var(--gold)">3万円固定</td><td>1銘柄のみ</td></tr>
+      <tr><td>50〜200万円</td><td style="color:var(--gold)">30%以内</td><td>3〜5銘柄</td></tr>
+      <tr><td>200万円〜</td><td style="color:var(--gold)">20%以内</td><td>5〜8銘柄</td></tr>
+    </table>
+    <div class="alert a-gold" style="margin-top:10px;margin-bottom:0"><h4>⚠️ 分散の考え方</h4>同じ業種に集中しない。例：IT×IT×IT = 業種集中リスク。IT×製造×内需 = 分散効果あり。</div>
+  </div>
+</div>
+
+<!-- ===== PAGE: OPS (Claude運用) ===== -->
+<div class="page" id="page-ops">
+  <div class="page-header">
+    <h2>Claude 運用フロー</h2>
+    <p>送り方・テンプレート・活用ガイド</p>
+  </div>
+
+  <div class="section-label">基本の考え方</div>
+  <div class="alert a-cyan"><h4>💡 このフローの本質</h4>
+  自分で全部分析する必要はない。<strong>材料を揃えてClaudeに渡す → 資料の条件と照合して返答をもらう → 最終判断は自分でする</strong>。この流れを繰り返すことで判断力が身についていく。</div>
+
+  <div class="section-label">運用の4フェーズ</div>
+  <div class="flow">
+    <div class="fstep">
+      <div class="fdot">1</div>
+      <div class="fcontent">
+        <h4>📥 情報収集（あなたが用意）</h4>
+        <p>チャート画像（スクショ）＋銘柄コード＋財務数値（PER・自己資本比率等）＋気になるニュース。<strong>これを揃えてからClaudeに送る。</strong></p>
+      </div>
+    </div>
+    <div class="fstep">
+      <div class="fdot">2</div>
+      <div class="fcontent">
+        <h4>🤖 Claude が分析</h4>
+        <p>資料の条件と照合しながら「ダウ理論・水平線・MA・ローソク足・ファンダ」を一気に整理。<strong>「○と△に該当するため〇〇」という形で返答。</strong></p>
+      </div>
+    </div>
+    <div class="fstep">
+      <div class="fdot">3</div>
+      <div class="fcontent">
+        <h4>🧠 あなたが最終判断</h4>
+        <p>Claudeの分析を読み解き、損切りライン・金額・タイミングを自分で決める。<strong>Claudeはあくまで補助。自己責任で実行。</strong></p>
+      </div>
+    </div>
+    <div class="fstep">
+      <div class="fdot">4</div>
+      <div class="fcontent">
+        <h4>📝 記録 → 月1振り返り</h4>
+        <p>買った理由・売った理由・結果を必ずメモ。<strong>月1でClaudeと振り返り、パターンを発見して改善。</strong>3ヶ月で実力が見えてくる。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">送り方テンプレート</div>
+  <div class="template-box">
+    <strong>📈 買い検討時</strong>
+「〇〇（証券コード）を検討中。チャート添付。<br>
+PER:○倍、自己資本比率:○%、<br>
+3期連続増収:○、直近決算:○%増<br>
+事業内容：○○（例：AI関連SaaS）<br>
+最近のニュース：○○<br>
+この資料の条件で何個クリア？今の時代の流れに合ってる？懸念は？」
+  </div>
+  <div class="template-box">
+    <strong>📉 売り・保有継続の判断時</strong>
+「〇〇を○円で保有中（現在○円、±○%）。<br>
+最新チャート添付。<br>
+直近決算：売上○%増（or減）<br>
+気になるニュース：○○<br>
+売り時 or 保有継続どちらが合理的？」
+  </div>
+  <div class="template-box">
+    <strong>🔍 銘柄スクリーニング時</strong>
+「○○業界で成長株を探している。<br>
+候補：A社・B社・C社。<br>
+この資料の買い条件（PER・増収・自己資本）<br>
+で比較してどれが一番合ってる？」
+  </div>
+  <div class="template-box">
+    <strong>📆 月次振り返り時</strong>
+「今月の取引記録：<br>
+・○○を○円で買い→○円で売り（+○%）理由：○<br>
+・○○を○円で買い→○円で売り（-○%）理由：○<br>
+パターンと改善点を教えて」
+  </div>
+
+  <div class="section-label">Claudeを使う上での注意</div>
+  <div class="card">
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">⚠️ リアルタイム株価は自動では持っていない<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">Claudeはリアルタイムの株価データを自動取得しない。チャート画像・財務数値を一緒に送ることでリアルタイム性が担保される。画像を送るほど精度が上がる。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">⚠️ 同じ会話を続けると文脈が引き継がれる<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">「先週買った〇〇の続きを相談したい」と言えば経緯を踏まえた返答になる。新しい会話を始めると文脈がリセットされるので注意。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">⚠️ 最終判断は必ず自分でする<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">Claudeの回答は参考意見。売買の最終判断・責任はあなた自身にある。「Claudeが言ったから」は理由にならない。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">💡 この資料をベースに話すと精度が上がる<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">「資料の○番の条件で見ると？」「画像④の指標を全部確認して」と聞くと、資料の知識を使って具体的な照合ができる。</div>
+    </div>
+  </div>
+
+  <div class="section-label">送ると効果的なもの一覧</div>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>タイミング</th><th>送るもの</th></tr>
+      <tr><td><span class="badge b-b">銘柄検討</span></td><td style="font-size:11px">チャート画像＋PER・自己資本比率・増収年数</td></tr>
+      <tr><td><span class="badge b-g">買い前</span></td><td style="font-size:11px">日足チャート画像＋現在値</td></tr>
+      <tr><td><span class="badge b-y">保有中</span></td><td style="font-size:11px">最新チャート＋含み損益＋ニュース</td></tr>
+      <tr><td><span class="badge b-r">決算後</span></td><td style="font-size:11px">決算数値（売上・営業利益の前年比）</td></tr>
+      <tr><td><span class="badge b-p">振り返り</span></td><td style="font-size:11px">取引記録（買値・売値・理由）</td></tr>
+    </table>
+  </div>
+
+  <div class="section-label">使い続けることで得られること</div>
+  <div class="card">
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">📅 短期（〜1ヶ月）<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">情報整理の時間が大幅に短縮され、感情的な判断が減る。チェックリストの習慣がつく。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">📅 中期（3〜6ヶ月）<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">Claudeとの対話を通じて自分の判断基準が言語化され、ルールが洗練される。勝ちパターン・負けパターンが見えてくる。</div>
+    </div>
+    <div class="accord-item" onclick="toggleAccord(this)">
+      <div class="accord-head">📅 長期（6ヶ月〜）<span class="accord-arrow">▼</span></div>
+      <div class="accord-body">Claudeなしでも同じ思考プロセスが自然にできるようになる。最終的にClaude への依存度が下がるのが理想の状態。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== PAGE: MORE ===== -->
+<div class="page" id="page-more">
+  <div class="page-header">
+    <h2>その他</h2>
+    <p>使い方ガイド・損益記録・用語集</p>
+  </div>
+
+  <!-- ===== HOW TO USE ===== -->
+  <div class="section-label">📱 このアプリの使い方・今の自分がどう使うか</div>
+
+  <div class="alert a-cyan" style="margin-bottom:10px">
+    <h4>💡 基本の考え方</h4>
+    このアプリは「毎回全部読む教科書」ではなく「必要な時にサッと引く辞書＋チェックリスト」。使い方は今の自分のフェーズによって変わる。
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗺️ あなた専用 フェーズ別ロードマップ</div>
+
+    <div style="background:var(--cyan-bg);border:1px solid var(--cyan-border);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--cyan)">
+      <strong>現在地：フェーズ1（今ここ）</strong><br>
+      <span style="color:var(--muted)">積立NISA継続中・個別株はまだ未経験・このガイドを読み始めたばかり</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0">
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--cyan),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--cyan-bg);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--cyan);margin-top:2px;flex-shrink:0">今</div>
+        <div style="background:var(--surface2);border:1.5px solid var(--cyan);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;color:var(--cyan)">フェーズ1（〜1ヶ月目）知識を入れる</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">このアプリの使い方：</strong><br>
+            ・毎日「ホーム→日々のルーティン」を開いて朝夜チェック<br>
+            ・「分析タブ」のダウ理論・水平線・MAだけ読む（全部読まなくていい）<br>
+            ・TradingViewで日経平均・気になる銘柄を毎日見る習慣をつける<br>
+            ・お金は一切使わない。見るだけ。<br>
+            <strong style="color:var(--cyan)">→ 目標：「今トレンドはどっち？」が感覚でわかるようになる</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--green-border),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;flex-shrink:0">2</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;">フェーズ2（2ヶ月目）銘柄を探す</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">このアプリの使い方：</strong><br>
+            ・「チェックタブ→STEP1」のファンダチェックを使いながらIR BANKで銘柄を10社絞る<br>
+            ・気になる銘柄のチャートをTradingViewで毎日ウォッチ<br>
+            ・「パターンタブ」で逆三尊・赤三兵・ダブルボトムだけ覚える<br>
+            ・まだ買わない。ウォッチリストを作るだけ。<br>
+            <strong style="color:var(--text)">→ Claudeへ：「この銘柄、資料の条件は何個クリアしてる？」</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="position:absolute;left:13px;top:30px;bottom:-6px;width:1.5px;background:linear-gradient(to bottom,var(--green-border),transparent)"></div>
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;flex-shrink:0">3</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;">フェーズ3（3〜5ヶ月目〜）初めて買う</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">このアプリの使い方：</strong><br>
+            ・「チェックタブ→全4ステップ」を買う前に必ず全部タップして確認<br>
+            ・チャート画像＋数値をClaudeに送って相談してから発注<br>
+            ・1銘柄3万円・損切り-5%（最大-1,500円）・利確+10〜15%<br>
+            ・買ったら「損益記録テンプレ（このページ下部）」に記録<br>
+            ・1銘柄・1〜3万円から。損切り（-7%）は絶対守る。<br>
+            <strong style="color:var(--green)">→ 目標：ルール通りに売買できること（利益より大切）</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;position:relative">
+        <div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;flex-shrink:0">4</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex:1;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;">フェーズ4（半年後〜）回し始める</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">このアプリの使い方：</strong><br>
+            ・慣れたら1銘柄5万円に増額 → 2銘柄へ分散<br>
+            ・毎月の振り返りでClaudeに記録を送ってパターン分析<br>
+            ・2〜3銘柄に分散。投資額を徐々に増やす<br>
+            ・このガイドは「辞書」として必要な時だけ開く<br>
+            ・「運用タブのテンプレ」を使いこなして相談の質を上げる<br>
+            <strong style="color:var(--text)">→ 目標：Claudeなしでも同じ判断ができるようになる</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert a-gold" style="margin-bottom:0">
+      <h4>📌 タブの使い分けまとめ</h4>
+      <span style="color:var(--text)">毎日：</span>ホームのルーティン<br>
+      <span style="color:var(--text)">買う前：</span>チェックタブ→全ステップ確認<br>
+      <span style="color:var(--text)">わからない時：</span>分析タブ・パターンタブで調べる<br>
+      <span style="color:var(--text)">相談する時：</span>運用タブのテンプレを使う<br>
+      <span style="color:var(--text)">月1回：</span>このページの損益記録を振り返る
+    </div>
+  </div>
+
+  <!-- ===== 損益記録 ===== -->
+  <div class="section-label">📝 損益記録テンプレート</div>
+  <div class="alert a-blue">
+    <h4>💡 使い方</h4>
+    買った・売った都度ここに記録。月1でClaudeに「今月の取引記録を振り返って」と送るとパターン分析してくれる。記録がないと成長できない。
+  </div>
+
+  <div class="card" id="trade-log-card">
+    <div class="card-title" style="justify-content:space-between">
+      取引記録
+      <span style="font-size:10px;color:var(--muted);font-weight:400" id="trade-count">0件</span>
+    </div>
+    <div id="trade-list" style="margin-bottom:12px;min-height:20px">
+      <div style="font-size:11px;color:var(--muted);text-align:center;padding:12px 0" id="trade-empty">まだ記録がありません</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">銘柄名 / コード</div>
+          <input type="text" id="t-name" placeholder="例：花王 / 4452" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:inherit">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">買い / 売り</div>
+          <select id="t-type" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:inherit">
+            <option value="買い">買い</option>
+            <option value="売り">売り</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">価格（円）</div>
+          <input type="number" id="t-price" placeholder="例：3200" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:inherit">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">金額（円）</div>
+          <input type="number" id="t-amount" placeholder="例：30000" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:inherit">
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">理由（なぜ買った / 売ったか）</div>
+        <input type="text" id="t-reason" placeholder="例：逆三尊＋サポートで反発・PER12倍" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:inherit">
+      </div>
+      <button onclick="addTrade()" style="background:var(--cyan-bg);border:1px solid var(--cyan-border);border-radius:8px;padding:9px;color:var(--cyan);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;width:100%">記録する</button>
+    </div>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:10px;color:var(--muted)">記録はこの端末のメモリに保存されます</span>
+      <span style="font-size:10px;color:var(--muted);cursor:pointer" onclick="copyTrades()">📋 Claudeに送る用にコピー</span>
+    </div>
+  </div>
+
+  <!-- ===== 用語集 ===== -->
+  <div class="section-label">📚 用語集</div>
+  <div class="card">
+    <div style="margin-bottom:10px">
+      <input type="text" id="glossary-search" placeholder="用語を検索..." oninput="filterGlossary(this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;font-family:inherit">
+    </div>
+    <div id="glossary-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end content -->
+
+<!-- Tab bar -->
+<div id="tabbar">
+  <button class="tab active" onclick="goTab('home')" id="tab-home">
+    <div class="tab-icon">🏠</div>
+    <div class="tab-label">ホーム</div>
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" onclick="goTab('basic')" id="tab-basic">
+    <div class="tab-icon">📊</div>
+    <div class="tab-label">分析</div>
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" onclick="goTab('pattern')" id="tab-pattern">
+    <div class="tab-icon">🕯</div>
+    <div class="tab-label">パターン</div>
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" onclick="goTab('check')" id="tab-check">
+    <div class="tab-icon">✅</div>
+    <div class="tab-label">チェック</div>
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" onclick="goTab('ops')" id="tab-ops">
+    <div class="tab-icon">🤖</div>
+    <div class="tab-label">運用</div>
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" onclick="goTab('more')" id="tab-more">
+    <div class="tab-icon">📖</div>
+    <div class="tab-label">その他</div>
+    <div class="tab-dot"></div>
+  </button>
+</div>
+
+
+<!-- Routine Overlay -->
+<div id="routine-overlay" onclick="closeRoutineOutside(event)">
+  <div id="routine-sheet">
+    <div class="routine-handle"></div>
+    <div class="routine-header">
+      <h3>📅 日々のルーティン</h3>
+      <button class="routine-close" onclick="closeRoutine()">✕</button>
+    </div>
+    <div class="routine-body">
+
+      <div class="rprog">
+        <div class="rprog-bar"><div class="rprog-fill" id="rprog-fill" style="width:0%"></div></div>
+        <div class="rprog-lbl" id="rprog-lbl">0 / 13</div>
+      </div>
+
+      <div class="rphase">🌅 朝ルーティン（市場開始前）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">日経平均・TOPIXのトレンドを確認
+          <div class="rsub">📱 <strong>Yahoo!ファイナンス</strong>アプリ → トップ画面で一目でわかる</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">ドル円の為替レートをチェック
+          <div class="rsub">📱 <strong>Yahoo!ファイナンス</strong>アプリ → 日経平均の隣に表示されてる</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">前日の米国市場（S&P500・ナスダック）の動きを確認
+          <div class="rsub">📱 <strong>Googleニュース</strong>で「S&P500」と検索。前日比±2%以上なら要注意</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">保有銘柄の関連ニュースをチェック
+          <div class="rsub">📱 <strong>Googleニュース</strong>で銘柄名を検索。決算・不祥事・業績修正がないか30秒確認</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">今日の重要イベントを確認
+          <div class="rsub">📱 <strong>Yahoo!ファイナンス</strong> → 経済指標カレンダー。日銀会合・米CPI発表日は相場が荒れやすい</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">ウォッチリスト銘柄のチャートを一巡
+          <div class="rsub">📱 <strong>TradingView</strong>アプリ → ウォッチリストを作っておくと一覧で確認できる</div>
+        </div>
+      </div>
+
+      <div class="rphase">📈 相場中（必要に応じて）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">保有株の損切りラインに近づいていないか確認
+          <div class="rsub">-7%ルールを守るため。感情で決めない</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">買いチャンスが来た時 → チェックリストを全部確認してからClaudeに相談
+          <div class="rsub">焦って買わない。条件が3つ以上揃ってから</div>
+        </div>
+      </div>
+
+      <div class="rphase">📚 週次学習（週1回・15〜20分）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">ウォッチリスト銘柄のチャートを見て今週のトレンド変化を確認
+          <div class="rsub">📱 <strong>TradingView</strong> → 週足に切り替えて確認。「先週より高値・安値が上か下か」だけ見ればOK</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">気になる銘柄を1つIR BANKで調べる
+          <div class="rsub">🌐 <strong>irbank.net</strong> → 銘柄名で検索。PER・自己資本比率・売上推移グラフを確認。5分で終わる</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">今週見たチャートのパターンをこのアプリのパターンタブで照合
+          <div class="rsub">📲 <strong>このアプリ → パターンタブ</strong>を開きながらTradingViewのチャートと見比べる</div>
+        </div>
+      </div>
+
+      <div class="rphase">🔍 隔週確認（2週に1回・30分）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">ウォッチ銘柄1〜2社をClaudeに送って条件照合
+          <div class="rsub">📲 <strong>TradingView</strong>でチャートをスクショ → <strong>IR BANK</strong>で数値確認 → <strong>Claude</strong>に両方送って「11項目何個クリア？時代の流れは？」</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">気になった経済ニュース・相場の動きをClaudeに整理してもらう
+          <div class="rsub">📱 <strong>Googleニュース or NewsPicks</strong>で見出しだけ流し読み → 気になった記事をClaudeに貼って「この銘柄への影響は？」と聞く</div>
+        </div>
+      </div>
+
+      <div class="rphase">📅 月次振り返り（月1回・30分）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">この1ヶ月で「見る力が上がったこと」をClaudeに壁打ち
+          <div class="rsub">📲 <strong>Claude</strong>に「今月の振り返りをしたい」と送るだけでOK。あとは話しながら整理できる</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">まだわからないこと・迷っていることをClaudeに質問
+          <div class="rsub">「○○がまだよくわからない」「この判断で合ってたか」を聞く。これが一番成長につながる</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">プール金額を確認・記録
+          <div class="rsub">💴 <strong>楽天証券アプリ</strong>で入金額を確認。3〜5万円に近づいたら次月からチェックリストを本格的に回し始める</div>
+        </div>
+      </div>
+
+      <div class="rphase">🌙 夜ルーティン（市場終了後）<span></span></div>
+
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">保有銘柄のチャートを確認
+          <div class="rsub">📱 <strong>TradingView</strong> → ダウ理論のトレンドに変化がないか・水平線を割っていないか</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">ウォッチリスト銘柄のチャートを確認
+          <div class="rsub">📱 <strong>TradingView</strong> → エントリーに近い形（逆三尊・サポート反発等）が出ていないか確認</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">今日の取引があれば記録する
+          <div class="rsub">📲 <strong>このアプリ → その他タブ → 損益記録</strong>に入力。買った・売った理由も必ず書く</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">保有株の売り判断チェック
+          <div class="rsub">①損切りライン（-5%）到達＝即売り・例外なし ②利確目標（+10%）到達＝確実に売る ③時代の流れが変わった（事業の追い風がなくなった） ③3期連続減収・業績悪化 ④ダウ理論でトレンド転換 ⑤PERが20倍超に割高化 → 1つでも該当したら売りを検討</div>
+        </div>
+      </div>
+      <div class="ritem" onclick="toggleR(this)">
+        <div class="rbox"><svg class="ricon" viewBox="0 0 13 13"><polyline points="2 6.5 5.5 10 11 3"/></svg></div>
+        <div class="rtext">気になる点があればClaudeに相談
+          <div class="rsub">📲 <strong>TradingViewでスクショ</strong>＋IR BANKの数値＋Googleニュースの記事をまとめてClaudeに送る</div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--cyan-border);border-radius:10px;padding:11px 13px;margin:14px 0 8px">
+        <div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;letter-spacing:.08em">📲 使うツール一覧</div>
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">Yahoo!ファイナンス</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">日経平均・為替・経済指標カレンダー</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">TradingView</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">チャート分析・ウォッチリスト管理</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">IR BANK</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">財務指標・業績推移の確認</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">Googleニュース</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">銘柄ニュース・経済指標の流し読み</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">NewsPicks</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">週次の経済トレンド把握（週1・見出しだけ）</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);font-weight:500">楽天証券アプリ</td><td style="padding:5px 0 5px 10px;border-bottom:1px solid rgba(30,45,69,.4);color:var(--muted)">入金・発注・プール金額の確認</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text);font-weight:500">Claude（このアプリ）</td><td style="padding:5px 0 5px 10px;color:var(--muted)">隔週の条件照合・月次振り返り・相談</td></tr>
+        </table>
+      </div>
+      <a class="rreset" onclick="resetRoutine()">↺ 全部リセット</a>
+    </div>
+  </div>
+</div>
+</div><!-- end app -->
+
+<div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
+
+<script>
+const pages={home:'page-home',basic:'page-basic',pattern:'page-pattern',check:'page-check',ops:'page-ops'};
+const tabs={home:'tab-home',basic:'tab-basic',pattern:'tab-pattern',check:'tab-check',ops:'tab-ops'};
+let current='home';
+
+function goTab(name){
+  document.getElementById('page-'+current).classList.remove('active');
+  document.getElementById('tab-'+current).classList.remove('active');
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('page-'+name).scrollTop=0;
+  current=name;
+  updateScrollBtn();
+}
+
+function toggleCheck(el){
+  el.classList.toggle('checked');
+}
+
+
+
+const glossaryData=[
+  {t:'含み損',d:'保有中の株が買値より下がっている状態。まだ売っていないので確定した損失ではない。'},
+  {t:'含み益',d:'保有中の株が買値より上がっている状態。売って初めて利益が確定する。'},
+  {t:'損切り（ロスカット）',d:'含み損が一定ラインを超えたら損失を確定させて売ること。損失の拡大を防ぐための重要なルール。'},
+  {t:'利確（利益確定）',d:'含み益がある状態で売って利益を確定させること。目標価格に達したら感情に流されず売る。'},
+  {t:'板（気配値）',d:'今この株を買いたい人・売りたい人の注文が並んでいる一覧。売買の勢いを見るために使う。'},
+  {t:'信用取引',d:'証券会社からお金を借りて株を買う仕組み。損失が投資額を超えることもある。初心者は避ける。'},
+  {t:'信用倍率',d:'信用買い残÷信用売り残。高いほど買いの過熱感が強く、将来の売り圧力になりやすい。'},
+  {t:'逆張り',d:'下落中に買う、上昇中に売るなどトレンドに逆らう投資スタイル。難易度が高く初心者には不向き。'},
+  {t:'順張り',d:'上昇トレンドで買う、下降トレンドで売るなどトレンドに沿った投資スタイル。初心者向き。'},
+  {t:'材料出尽くし',d:'好材料（好決算・新製品等）が出た後、むしろ株価が下がる現象。「期待で買って事実で売る」市場心理。'},
+  {t:'押し目',d:'上昇トレンド中に一時的に下がる局面。良い買い場になることが多い。'},
+  {t:'戻り売り',d:'下降トレンド中に一時的に上がった場面で売ること。'},
+  {t:'窓（ギャップ）',d:'前日終値と翌日始値の間に価格帯が飛んでできる空白。「窓を埋める」という動きが起きやすい。'},
+  {t:'出来高',d:'その日に売買が成立した株数。出来高が大きいほど注目度・信頼性が高い。'},
+  {t:'時価総額',d:'株価×発行済み株式数。会社全体の値段。100億円以下は小型株、1000億円超は中大型株。'},
+  {t:'EPS（1株当たり利益）',d:'純利益÷発行済み株式数。EPSが増加し続ける銘柄は成長企業の証。'},
+  {t:'配当利回り',d:'1株当たり年間配当÷株価×100。高いほど配当が多いが、高すぎる場合は減配リスクも疑う。'},
+  {t:'株式分割',d:'1株を複数株に分ける。株価は下がるが保有株数が増える。流動性向上が目的。'},
+  {t:'自社株買い',d:'会社が自分の株を市場から買い戻すこと。1株当たりの価値が上がり株価上昇要因になる。'},
+  {t:'空売り',d:'株を借りて売り、後で安く買い戻して返す手法。下落相場で利益を狙う。信用取引の一種。'},
+  {t:'上場',d:'株式市場で株の売買ができるようになること。東証プライム・スタンダード・グロース等がある。'},
+  {t:'IPO',d:'新規株式公開。非上場企業が初めて株式市場に上場すること。抽選で新株を購入できる。'},
+  {t:'インデックス投資',d:'日経平均やS&P500などの指数に連動する投資信託・ETFへの投資。積立NISAで使う手法。'},
+  {t:'オルカン',d:'全世界株式インデックスファンドの俗称。世界約50ヶ国の株式に分散投資できる。'},
+  {t:'グロース株',d:'売上・利益の成長率が高い企業の株。PERが高めでも将来の成長に期待して買われる。'},
+  {t:'バリュー株',d:'PERやPBRが低く、本来の価値より割安に放置されている株。割安さを狙う投資スタイル。'},
+  {t:'ボラティリティ',d:'価格の変動の激しさ。高いほどリスクとリターンの幅が大きい。'},
+  {t:'レンジ相場（横ばい）',d:'上昇も下降もせず一定の範囲内で動く相場。トレンドが明確でないため売買判断が難しい。'},
+  {t:'ナンピン',d:'含み損の銘柄を追加購入して平均取得価格を下げる手法。さらなる下落で損失が拡大するリスクあり。初心者は避ける。'},
+  {t:'決算短信',d:'決算発表時に企業が公表する業績報告書。売上・利益・今後の見通しが書かれている。'},
+  {t:'上方修正・下方修正',d:'業績予想を上に（下に）修正すること。上方修正は株価上昇、下方修正は株価下落要因になりやすい。'},
+];
+
+function renderGlossary(items){
+  const el=document.getElementById('glossary-list');
+  if(!items.length){el.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">見つかりませんでした</div>';return;}
+  el.innerHTML=items.map(g=>`<div class="accord-item" onclick="toggleAccord(this)"><div class="accord-head" style="font-size:12px">${g.t}<span class="accord-arrow">▼</span></div><div class="accord-body">${g.d}</div></div>`).join('');
+}
+
+function filterGlossary(q){
+  const filtered=q?glossaryData.filter(g=>g.t.includes(q)||g.d.includes(q)):glossaryData;
+  renderGlossary(filtered);
+}
+
+let trades=[];
+function addTrade(){
+  const name=document.getElementById('t-name').value.trim();
+  const type=document.getElementById('t-type').value;
+  const price=document.getElementById('t-price').value;
+  const amount=document.getElementById('t-amount').value;
+  const reason=document.getElementById('t-reason').value.trim();
+  if(!name||!price){alert('銘柄名と価格は必須です');return;}
+  const now=new Date();
+  const date=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
+  trades.unshift({date,name,type,price,amount,reason});
+  renderTrades();
+  document.getElementById('t-name').value='';
+  document.getElementById('t-price').value='';
+  document.getElementById('t-amount').value='';
+  document.getElementById('t-reason').value='';
+}
+
+function renderTrades(){
+  const el=document.getElementById('trade-list');
+  const empty=document.getElementById('trade-empty');
+  document.getElementById('trade-count').textContent=trades.length+'件';
+  if(!trades.length){if(empty)empty.style.display='block';el.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px 0" id="trade-empty">まだ記録がありません</div>';return;}
+  el.innerHTML=trades.map((t,i)=>`
+    <div style="background:var(--surface2);border-radius:8px;padding:9px 11px;margin-bottom:6px;position:relative">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <span style="font-size:11px;font-weight:700">${t.name}</span>
+        <span style="font-size:10px;padding:1px 6px;border-radius:3px;background:${t.type==='買い'?'var(--green-bg)':'var(--red-bg)'};color:${t.type==='買い'?'var(--green)':'var(--red)'}">${t.type}</span>
+        <span style="font-size:10px;color:var(--muted);margin-left:auto">${t.date}</span>
+        <span style="font-size:11px;color:var(--muted);cursor:pointer;padding:2px 4px" onclick="deleteTrade(${i})">✕</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">${t.price}円${t.amount?' / '+Number(t.amount).toLocaleString()+'円':''}</div>
+      ${t.reason?`<div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5">理由：${t.reason}</div>`:''}
+    </div>`).join('');
+}
+
+function deleteTrade(i){trades.splice(i,1);renderTrades();}
+
+function copyTrades(){
+  if(!trades.length){alert('記録がありません');return;}
+  const text='【取引記録】\n'+trades.map(t=>`${t.date} ${t.name} ${t.type} ${t.price}円${t.amount?' '+Number(t.amount).toLocaleString()+'円':''} 理由：${t.reason||'なし'}`).join('\n')+'\n\nこの取引記録を振り返って、パターンと改善点を教えて。';
+  navigator.clipboard.writeText(text).then(()=>alert('コピーしました！Claudeに貼り付けて送ってください。')).catch(()=>alert('コピーに失敗しました'));
+}
+
+// Init glossary on load
+window.addEventListener('DOMContentLoaded',()=>{renderGlossary(glossaryData);});
+
+function openRoutine(){document.getElementById('routine-overlay').classList.add('show')}
+function closeRoutine(){document.getElementById('routine-overlay').classList.remove('show')}
+function closeRoutineOutside(e){if(e.target===document.getElementById('routine-overlay'))closeRoutine()}
+function toggleR(el){
+  el.classList.toggle('on');
+  updateRprog();
+}
+function updateRprog(){
+  const items=document.querySelectorAll('#routine-sheet .ritem');
+  const done=document.querySelectorAll('#routine-sheet .ritem.on').length;
+  const total=items.length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('rprog-fill').style.width=pct+'%';
+  document.getElementById('rprog-lbl').textContent=done+' / '+total;
+}
+function resetRoutine(){
+  document.querySelectorAll('#routine-sheet .ritem').forEach(el=>el.classList.remove('on'));
+  updateRprog();
+}
+
+function resetCheck(id){
+  document.querySelectorAll('#'+id+' .check-item').forEach(el=>el.classList.remove('checked'));
+}
+
+function toggleAccord(el){
+  el.classList.toggle('open');
+}
+
+function scrollToTop(){
+  document.getElementById('page-'+current).scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateScrollBtn(){
+  const page=document.getElementById('page-'+current);
+  const btn=document.getElementById('scrollTop');
+  btn.classList.toggle('show',page.scrollTop>200);
+}
+
+document.querySelectorAll('.page').forEach(p=>{
+  p.addEventListener('scroll',()=>{
+    if(p.classList.contains('active')) updateScrollBtn();
+  },{passive:true});
+});
+
+// Swipe navigation
+let startX=0,startY=0;
+const tabOrder=['home','basic','pattern','check','ops','more'];
+document.getElementById('content').addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
+document.getElementById('content').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-startX;
+  const dy=e.changedTouches[0].clientY-startY;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
+    const i=tabOrder.indexOf(current);
+    if(dx<0&&i<tabOrder.length-1) goTab(tabOrder[i+1]);
+    else if(dx>0&&i>0) goTab(tabOrder[i-1]);
+  }
+},{passive:true});
+</script>
+</body>
+</html>
